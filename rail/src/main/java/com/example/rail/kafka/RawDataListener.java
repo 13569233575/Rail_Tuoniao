@@ -50,6 +50,7 @@ public class RawDataListener {
                     resultGps.setTblCarGps(gpsTable.getData());
                     String jsonV = (String) redisTemplate.opsForValue().get(resultGps.getTblCarGps().getCarno());
                     try{
+                        // 此处是需要缓存车辆时测试添加缓存车辆信息
                         //redisTemplate.opsForValue().set("浙FJ5333",JSON.toJSONString(setCarRilInfo()));
                         CarRailInfo carRailInfo =JSON.parseObject(jsonV,CarRailInfo.class);
                         if(carRailInfo != null && (carRailInfo.getFenceList() != null && !carRailInfo.getFenceList().isEmpty())){
