@@ -27,23 +27,23 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConsumerConfig {
 
-    @Value("${kafka.consumer.servers}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String servers;
-    @Value("${kafka.consumer.enable.auto.commit}")
+    @Value("${spring.kafka.consumer.enable.auto.commit}")
     private boolean enableAutoCommit;
-    @Value("${kafka.consumer.session.timeout}")
+    @Value("${spring.kafka.consumer.session.timeout}")
     private String sessionTimeout;
-    @Value("${kafka.consumer.auto.commit.interval}")
+    @Value("${spring.kafka.consumer.auto.commit.interval}")
     private String autoCommitInterval;
-    @Value("${kafka.consumer.group.id}")
+    @Value("${spring.kafka.consumer.group.id}")
     private String groupId;
-    @Value("${kafka.consumer.auto.offset.reset}")
+    @Value("${spring.kafka.consumer.auto.offset.reset}")
     private String autoOffsetReset;
-    @Value("${kafka.consumer.concurrency}")
+    @Value("${spring.kafka.consumer.concurrency}")
     private int concurrency;
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
         factory.setConsumerFactory(consumerFactory());
         factory.setConcurrency(concurrency);
         factory.getContainerProperties().setPollTimeout(1500);
@@ -51,12 +51,12 @@ public class KafkaConsumerConfig {
     }
 
     public ConsumerFactory<String, String> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+        return new DefaultKafkaConsumerFactory<String, String>(consumerConfigs());
     }
 
 
     public Map<String, Object> consumerConfigs() {
-        Map<String, Object> propsMap = new HashMap<>();
+        Map<String, Object> propsMap = new HashMap<String,Object>();
         propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
         propsMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitInterval);

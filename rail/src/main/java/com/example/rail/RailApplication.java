@@ -7,13 +7,14 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 @SpringBootApplication
 public class RailApplication extends SpringBootServletInitializer {
+
     public static void main(String[] args) {
         SpringApplication.run(RailApplication.class, args);
     }
 
-    @Override//为了打包springboot项目
-    protected SpringApplicationBuilder configure(
-            SpringApplicationBuilder builder) {
-        return builder.sources(this.getClass());
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(RailApplication.class);
     }
+
 }

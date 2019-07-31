@@ -9,7 +9,6 @@ import com.example.rail.entity.result.ResultGps;
 import com.example.rail.pool.CalculateThreadPool;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +16,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -39,8 +39,9 @@ public class RawDataListener {
      * @param record
      * @throws
      */
-    @KafkaListener(topicPattern = "${kafka.consumer.topic}", groupId = "${kafka.consumer.group.id}")
+    @KafkaListener(topicPattern = "${spring.kafka.consumer.topic}", groupId = "${spring.kafka.consumer.group.id}")
     public void listen(ConsumerRecord<?, ?> record) {
+        log.info("kafka消费者接收到消费数据: " + new Date());
         String value = (String) record.value();
         GpsTable gpsTable = JSON.parseObject(value,GpsTable.class);
         if("tbl_car_gps".equals(gpsTable.getTable())){
@@ -50,11 +51,10 @@ public class RawDataListener {
                     resultGps.setTblCarGps(gpsTable.getData());
                     String jsonV = (String) redisTemplate.opsForValue().get(resultGps.getTblCarGps().getCarno());
                     try{
-                        // 此处是需要缓存车辆时测试添加缓存车辆信息
                         //redisTemplate.opsForValue().set("浙FJ5333",JSON.toJSONString(setCarRilInfo()));
                         CarRailInfo carRailInfo =JSON.parseObject(jsonV,CarRailInfo.class);
                         if(carRailInfo != null && (carRailInfo.getFenceList() != null && !carRailInfo.getFenceList().isEmpty())){
-                            //log.info("执行MAP解析,判定经纬度是否在围栏区域内, 车牌号: " + carRailInfo.getCarNo());
+                            log.info("执行MAP解析,判定经纬度是否在围栏区域内, 车牌号: " + carRailInfo.getCarNo());
                             resultGps.setCarRailInfo(carRailInfo);
                             CalculateThreadPool.putCalculateGps(resultGps);
                         }
@@ -70,7 +70,7 @@ public class RawDataListener {
     private static CarRailInfo setCarRilInfo(){
         CarRailInfo carRailInfo = new CarRailInfo();
         carRailInfo.setCarNo("浙FJ5333");
-        List<RailInfo> railInfoList = new ArrayList<>();
+        List<RailInfo> railInfoList = new ArrayList<RailInfo>();
         RailInfo railInfo1 = new RailInfo();
         railInfo1.setFenceId(1);
         railInfo1.setType(1);
@@ -94,7 +94,7 @@ public class RawDataListener {
         railInfo3.setFenceId(3);
         railInfo3.setType(3);
         railInfo3.setFenceType(3);
-        List<RailPolygon> railPolygonList = new ArrayList<>();
+        List<RailPolygon> railPolygonList = new ArrayList<RailPolygon>();
         RailPolygon railPolygon1 = new RailPolygon();
         railPolygon1.setPolygonLat("34.3400923430");
         railPolygon1.setPolygonLot("108.7555233579");

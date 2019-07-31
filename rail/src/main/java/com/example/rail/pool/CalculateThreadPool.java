@@ -60,7 +60,7 @@ public class CalculateThreadPool {
     }
 
     public static void externalThreadInitialize(){
-        //初始化时向线程池提交CPU_NUMBER / 2 个任务
+        //初始化时向线程池提交5个任务
         for (int i = 0; i < CPU_NUMBER/2; i++) {
             executorService.execute(new Runnable() {
                 @Override
